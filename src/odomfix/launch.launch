@@ -1,0 +1,6 @@
+<launch>
+	<!--c++ node-->
+	<node name = "odomfix" pkg = "odomfix"
+	type = "odomfix" output = "screen"/>
+</launch>
+
