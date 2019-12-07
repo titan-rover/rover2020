@@ -29,9 +29,9 @@ int main(int argc, char** argv){
 
     //compute odometry in a typical way given the velocities of the robot
     double dt = (current_time - last_time).toSec();
-    double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
-    double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
-    double delta_th = vth * dt;
+    double delta_x = 0;
+    double delta_y = 0;
+    double delta_th = 0;
 
     x += delta_x;
     y += delta_y;
@@ -47,8 +47,8 @@ int main(int argc, char** argv){
     odom_trans.child_frame_id = "laser";
     // above, changed from the original base_link to laser since the transforms were't moving together
 
-    odom_trans.transform.translation.x = x;
-    odom_trans.transform.translation.y = y;
+    odom_trans.transform.translation.x = 0;
+    odom_trans.transform.translation.y = 0;
     odom_trans.transform.translation.z = 0.0;
     odom_trans.transform.rotation = odom_quat;
 
@@ -61,16 +61,16 @@ int main(int argc, char** argv){
     odom.header.frame_id = "odom";
 
     //set the position
-    odom.pose.pose.position.x = x;
-    odom.pose.pose.position.y = y;
+    odom.pose.pose.position.x = 0;
+    odom.pose.pose.position.y = 0;
     odom.pose.pose.position.z = 0.0;
     odom.pose.pose.orientation = odom_quat;
 
     //set the velocity
     odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = vx;
-    odom.twist.twist.linear.y = vy;
-    odom.twist.twist.angular.z = vth;
+    odom.twist.twist.linear.x = 0;
+    odom.twist.twist.linear.y = 0;
+    odom.twist.twist.angular.z = 0;
 
     //publish the message
     odom_pub.publish(odom);

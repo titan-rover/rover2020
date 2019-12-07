@@ -55,7 +55,7 @@ magneticDeclination = 10.48 # Hanksville
 #bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 # BeagleBone Black configuration with default I2C connection (SCL=P9_19, SDA=P9_20),
 # and RST connected to pin P9_12:
-bno = BNO055.BNO055(busnum=0)
+bno = BNO055.BNO055(busnum=8)
 confMode = True
 
 # Enable verbose debug logging if -v is passed as a parameter.
@@ -81,7 +81,7 @@ while not bno.begin():
 def magToTrue(h):
     return (h + magneticDeclination) % 360
 
-fileIn = open('/home/deimos/catkin_ws/src/imu/src/calibrationData.txt','r')
+fileIn = open('/home/rover/catkin_ws/src/imu/src/calibrationData.txt','r')
 data = fileIn.read().splitlines()
 for i in range(len(data)):
     data[i] = int(data[i])

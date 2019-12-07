@@ -45,12 +45,12 @@ def packDEEZNUTZ(message, joyNum): #object to bytes
         '2i18b',\
         message.header.stamp.secs,\
         message.header.stamp.nsecs,\
-        (int(message.joys[joyNum].axes[0] * 64) + 64),\
-        (int(message.joys[joyNum].axes[1] * 64) + 64),\
-        (int(message.joys[joyNum].axes[2] * 64) + 64),\
-        (int(message.joys[joyNum].axes[3] * 64) + 64),\
-        (int(message.joys[joyNum].axes[4] * 64) + 64),\
-        (int(message.joys[joyNum].axes[5] * 64) + 64),\
+        int(message.joys[joyNum].axes[0]),\
+        int(message.joys[joyNum].axes[1]),\
+        int(message.joys[joyNum].axes[2]),\
+        int(message.joys[joyNum].axes[3]),\
+        int(message.joys[joyNum].axes[4]),\
+        int(message.joys[joyNum].axes[5]),\
         message.joys[joyNum].buttons[0],\
         message.joys[joyNum].buttons[1],\
         message.joys[joyNum].buttons[2],\
