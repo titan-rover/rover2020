@@ -59,6 +59,7 @@ class MultiJoyParser(object):
         msg.header.stamp=rospy.Time.now()
         msg.njoys.data=self.njoys
         msg.joys=args
+        msg.source=0
         self.multijoy_pub.publish(msg)
 
 if __name__=='__main__':
