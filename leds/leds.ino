@@ -11,11 +11,11 @@
 #include <Wire.h>
 #include <PololuLedStrip.h>
 
-#define LED_COUNT 12
+#define LED_COUNT 6
 #define SLAVE_ADDRESS 0x04 // Arduino i2c Slave address
 
 PololuLedStrip<12> ledStrip; // Create an ledStrip object
-rgb_color colors[LED_COUNT]; // Must be multiple of 4
+rgb_color colors[LED_COUNT]; 
 
 struct roverColors {
   uint8_t rgbVals[3];
@@ -40,7 +40,7 @@ void setup()
     set(10, 10);
 }
 
-void loop() {}
+void loop() { }
 
 void receiveData(int byteCount) 
 {
@@ -85,6 +85,7 @@ void set(uint16_t mode, uint16_t freq)
 }
 
 // From PololuLed library
+//TODO: figure out how large the number needs to be in order to have this function run for 15 seconds (update i < 50000)
 void found()
 {
     for(int i = 0; i < 50000; i++)
@@ -103,20 +104,21 @@ void found()
 
 void csuf()
 {
-    int chaseSize = 2;
+    int chaseSize = 3;
     int current = 0;
-    for(int oddLed = 0; ; oddLed++)
-    {
-        if (mode != 10 || freq != 10)
-        {
-            break;
-        }
-        for(int i = 0; i < LED_COUNT; i++)
-        {
-            current = oddLed % chaseSize;
-            colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
-            ledStrip.write(colors, LED_COUNT);
-        }
-    current++;
+      for(int oddLed = 0; ; oddLed++)
+      {
+          if(mode != 10 | freq != 10) 
+          {
+              break;
+          }
+          for(int i = 0; i < LED_COUNT; i++)
+          {
+              current = oddLed % chaseSize;
+              colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
+              ledStrip.write(colors, LED_COUNT);
+          }
+      current++;
+      delay(250);
     }
 }
