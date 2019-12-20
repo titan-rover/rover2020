@@ -65,7 +65,7 @@ if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     # logging.basicConfig(level=logging.DEBUG)
 
 time.sleep(1)
-# Initialize ros
+# Initialize ros 
 rospy.loginfo('Initializing imu publisher')
 imu_pub = rospy.Publisher('/imu', Imu, queue_size=1)
 rospy.loginfo("Publishing Imu at: " + imu_pub.resolved_name)

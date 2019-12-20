@@ -53,6 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Yaw.msg
    fimu.msg
+   axes.msg
  )
 
 ## Generate services in the 'srv' folder

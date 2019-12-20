@@ -1,9 +1,0 @@
-<launch>
-	<!--c++ node-->
-	<node name<launch>
-	<!--c++ node-->
-	<node name = "fileName" pkg = "simple_test"
-	type = "fileName" output = "screen"/>	<!--Python node-->
-	<node name = "fileName" pkg = "simple_test"
-	type = </launch>
->

@@ -1,5 +1,5 @@
 <launch>
-<!--<node pkg="finalimu" type="cal_run_Imu.py" name="imu"/>
+<!--<node pkg="finalimu" type="run_Imu.py" name="imu"/>
 <node pkg="gnss" type="reach.py" name="gnss"/>
 -->
 <include file="/home/rover/catkin_ws/src/sick_scan/launch/sick_lms_1xx.launch"/>

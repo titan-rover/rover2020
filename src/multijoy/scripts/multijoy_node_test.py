@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 import rospy, socket, struct, serial, threading, paramiko
 import message_filters as mf
-from sensor_msgs.msg import Joy
 from multijoy.msg import Multi
+from sensor_msgs.msg import Joy
 from time import sleep
 base_ubiquiti = "192.168.1.200"
 hostName = socket.gethostname()
 print("Host: " + hostName)
-global RSSI
-RSSI = 0
 
 def getRSSI():
     global RSSI
@@ -21,7 +19,7 @@ def getRSSI():
         signal = int('-' + ''.join(i for i in signal if i.isdigit()))
         RSSI = signal
 
-        '''
+
 def putSock(oData):
     try:
         port = 8888  # Make sure it's within the > 1024 $$ <65535 range
@@ -37,20 +35,19 @@ def putSock(oData):
     except Exception as e:
         print("Error in putSock()")
         print(e)
-        '''
+
 def packDEEZNUTZ(message, joyNum): #object to bytes
-    print("set joystick values")
     try:
         return struct.pack(\
         '2i18b',\
         message.header.stamp.secs,\
         message.header.stamp.nsecs,\
-        int(message.joys[joyNum].axes[0]),\
-        int(message.joys[joyNum].axes[1]),\
-        int(message.joys[joyNum].axes[2]),\
-        int(message.joys[joyNum].axes[3]),\
-        int(message.joys[joyNum].axes[4]),\
-        int(message.joys[joyNum].axes[5]),\
+        int(message.joys[joyNum].axes[0] * 127),\
+        int(message.joys[joyNum].axes[1] * 127),\
+        int(message.joys[joyNum].axes[2] * 127),\
+        int(message.joys[joyNum].axes[3] * 127),\
+        int(message.joys[joyNum].axes[4] * 127),\
+        int(message.joys[joyNum].axes[5] * 127),\
         message.joys[joyNum].buttons[0],\
         message.joys[joyNum].buttons[1],\
         message.joys[joyNum].buttons[2],\
@@ -74,21 +71,16 @@ class MultiJoyParser(object):
         self.ns=rospy.get_name()
 	self.param_name_debug=self.ns+'/debug'
         self.param_name_njoys=self.ns+'/njoys'
-        
-	print "before"
         if rospy.has_param(self.param_name_debug):
-            print "in"
             self.debug=rospy.get_param(self.param_name_debug)
         else:
             self.debug=False
-        print "after"
-        #print rospy.get_param(self.param_name_njoys)
         self.njoys=rospy.get_param(self.param_name_njoys)
 
         if self.debug:
             rospy.loginfo('debug={}'.format(self.debug))
             rospy.loginfo('njoys={}'.format(self.njoys))
-
+            
         # Setup ros publisher
         self.multijoy_pub=rospy.Publisher('/multijoy', Multi, queue_size=1)
 
@@ -103,7 +95,7 @@ class MultiJoyParser(object):
         global RSSI
         msg=Multi()
         msg.header.stamp=rospy.Time.now()
-        if (hostName == "rover"):
+        if (hostName == "tegra-ubuntu"):
             msg.source = 0
         else:
             msg.source = 1
@@ -112,21 +104,20 @@ class MultiJoyParser(object):
         print(msg)
 
         print(RSSI)
-        if hostName == "rover": #(RSSI > -90) or hostName == "tegra-ubuntu":
+        if(RSSI > -90) or hostName == "tegra-ubuntu":
             self.multijoy_pub.publish(msg)
         else:
-            pass
-            #putSock(packDEEZNUTZ(msg, 0)) #send to pi to send to radio
-            #sleep(0.1)
+            putSock(packDEEZNUTZ(msg, 0)) #send to pi to send to radio
+            sleep(0.1)
         if self.debug:
             rospy.loginfo('joys retrieved and published')
 
 if __name__=='__main__':
     RSSI = 0
-    #if(hostName != "rover"): #toggle true/false for debuggingg
+    #if(True and hostName != "tegra-ubuntu"): #toggle true/false for debuggingg
     #    threading.Thread(target=getRSSI).start()
 
     rospy.init_node('multijoy_node')
     parser=MultiJoyParser()
     rospy.spin()
-    #usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
+#usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0

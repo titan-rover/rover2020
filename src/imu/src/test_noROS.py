@@ -23,17 +23,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+
+'''
+Omits all ROS commands so the IMU can be tested without ROS
+Run with:
+  python test_noROS.py
+'''
+
 #import logging , requests
 import sys , subprocess , time, signal
-import rospy
+#import rospy
 #from deepstream import get, post
 from Adafruit_BNO055 import BNO055
-from sensor_msgs.msg import Imu
-from imu.msg import axes as Axes
-from geometry_msgs.msg import Quaternion, Vector3, PoseStamped, WrenchStamped
+#from sensor_msgs.msg import Imu
+#from imu.msg import fimu as Imu
+#from geometry_msgs.msg import Quaternion, Vector3, PoseStamped, WrenchStamped
 
 def sigint_handler(signum, frame):
-    print 'CTRL+C Pressed!'
+    #print 'CTRL+C Pressed!'
     exit()
 
 signal.signal(signal.SIGINT, sigint_handler)
@@ -65,14 +73,14 @@ if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
     # logging.basicConfig(level=logging.DEBUG)
 
 time.sleep(1)
-# Initialize ros
+# Initialize ros 
+'''
 rospy.loginfo('Initializing imu publisher')
 imu_pub = rospy.Publisher('/imu', Imu, queue_size=1)
 rospy.loginfo("Publishing Imu at: " + imu_pub.resolved_name)
 ps_pub = rospy.Publisher('/posestamped', PoseStamped, queue_size=1)
-axes_pub = rospy.Publisher('/axes', Axes, queue_size=1)
 rospy.init_node('imu')
-
+'''
 # Initialize the BNO055 and stop if something went wrong.
 while not bno.begin():
     rospy.logerr('Waiting for sensor')
@@ -90,10 +98,11 @@ bno.set_calibration(data)
 fileIn.close()
 
 # Print system status and self test result.
-status, self_test, error = bno.get_system_status()
-rospy.loginfo('System status: {0}'.format(status))
-rospy.loginfo('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+#status, self_test, error = bno.get_system_status()
+#rospy.loginfo('System status: {0}'.format(status))
+#rospy.loginfo('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 # Print out an error if system status is in error mode.
+'''
 if status == 0x01:
     rospy.logerr('System error: {0}'.format(error))
     rospy.logerr('See datasheet section 4.3.59 for the meaning.')
@@ -105,16 +114,14 @@ rospy.loginfo('Bootloader version: {0}'.format(bl))
 rospy.loginfo('Accelerometer ID:   0x{0:02X}'.format(accel))
 rospy.loginfo('Magnetometer ID:    0x{0:02X}'.format(mag))
 rospy.loginfo('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
-
+'''
 print('Reading BNO055 data, press Ctrl-C to quit...')
 
-i = Imu()
-ps = PoseStamped()
-axes_ = Axes()
-i.header.frame_id = 'BNO055'
-
+#i = Imu()
+#ps = PoseStamped()
+#i.header.frame_id = 'BNO055'
 try:
-    while True:
+  while True:
 	try:
 		'''
 		if confMode == False and (sys != 3 or mag != 3):
@@ -126,30 +133,29 @@ try:
 		# Read the calibration status, 0=uncalibrated and 3=fully calibrated
 		sys, gyro, accel, mag = bno.get_calibration_status()
 		heading = magToTrue(heading)
-
 		if sys == 3 and gyro == 3 and accel == 3 and mag == 3 and confMode:
 		    bno.set_mode(0X0C)
 		    confMode = False
 
 		print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(
 		    heading, roll, pitch, sys, gyro, accel, mag))
+
 		#imuData = { "heading":heading, "roll":roll, "pitch":pitch, "sys":sys, "gyro":gyro, "accel":accel, "mag":mag }
 
-		i.header.stamp = rospy.Time.now()
-		ps.header = i.header
+		#i.header.stamp = rospy.Time.now()
+		#ps.header = i.header
 
-		axes_.yaw = heading
-		axes_.pitch = pitch
-                axes_.roll = roll
-                axes_pub.publish(axes_)
+		#i.yaw.yaw = heading
+		#i.yaw.pitch = pitch
+                #i.yaw.roll = roll
 		# Other values you can optionally read:
 		# Orientation as a quaternion:
-		q = Quaternion()
-		q.x, q.y, q.z, q.w = bno.read_quaternion()
-		i.orientation = q
-		v = Vector3()
-		v.x, v.y, v.z = roll, pitch, heading
-		i.angular_velocity = v
+		#q = Quaternion()
+		#q.x, q.y, q.z, q.w = bno.read_quaternion()
+		#i.orientation = q
+		#v = Vector3()
+		#v.x, v.y, v.z = roll, pitch, heading
+		#i.angular_velocity = v
 		# Sensor temperature in degrees Celsius:
 		#temp_c = bno.read_temp()
 		# Magnetometer data (in micro-Teslas):
@@ -160,11 +166,11 @@ try:
 		#x,y,z = bno.read_accelerometer()
 		# Linear acceleration data (i.e. acceleration from movement, not gravity--
 		# returned in meters per second squared):
-		v.x,v.y,v.z = bno.read_linear_acceleration()
-		i.linear_acceleration = v
-		imu_pub.publish(i)
-		ps.pose.orientation = i.orientation
-		ps_pub.publish(ps)
+		#v.x,v.y,v.z = bno.read_linear_acceleration()
+		#i.linear_acceleration = v
+		#imu_pub.publish(i)
+		#ps.pose.orientation = i.orientation
+		#ps_pub.publish(ps)
 		# Gravity acceleration data (i.e. acceleration just from gravity--returned
 		# in meters per second squared):
 		#x,y,z = bno.read_gravity()

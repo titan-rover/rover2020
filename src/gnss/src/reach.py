@@ -58,6 +58,25 @@ def main():
                 msg.roverLat = str(float(data[4]))
                 msg.roverLon = str(float(data[5]))
                 gps_pub.publish(msg)
+
+                # Start new code
+                #geometry_msgs::TransformStamped odom_trans
+                #odom_trans = geometry_msgs.msg.TransformStamped()
+                #odom_trans.header.stamp = current_time
+                #odom_trans.header.frame_id = "odom"
+                #odom_trans.trans.child_frame = "base_link"
+
+                #odom_trans.transform.translation.translation.x = float(data[4])
+                #odom_trans.transform.translation.translation.y = float(data[5])
+                #odom_trans.transform.translation.translation.z = 0
+                #odom_trans.transform.rotation = odom_quat
+
+                #odom_broadcaster.sendTransform(odom_trans)
+                #gps_pub.publish(msg)
+
+                # End code
+
+
                 #print(msg)
                 rate.sleep()
         except:
