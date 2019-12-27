@@ -1,3 +1,0 @@
-# main.py -- put your code here!
-from pyb import Pin, Timer, UART, ADC
-impor
