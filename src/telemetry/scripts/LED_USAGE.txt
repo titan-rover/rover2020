@@ -1,3 +1,17 @@
+TO WIRE UP:
+You need five male-female cables.
+Be sure that 3 of the cables are hooked up to the LED strip (pwr=yellow, gnd=white, signal=green)
+On the Arduino Nano:
+Pin A4 is SDA
+Pin A5 is SCL
+Pin D12 is the signal
+Hook up power for the lights on a 5v pin
+Hook up ground for the lights on a gnd pin
+On the Xavier:
+Hook up the SDA cable to pin 27
+Hook up the SCL cable to pin 28
+
+
 The python scripts led_master.py and led_pub.py run the led strips mounted on the front
 and back of the rover.
 
