@@ -1,5 +1,4 @@
-  
-/*
+ /*
  *File:        leds.ino
  *Author:      Chary Vielma
  *Email:       chary.vielma@csu.fullerton.edu
@@ -12,7 +11,7 @@
 #include <Wire.h>
 #include <PololuLedStrip.h>
 
-#define LED_COUNT 60
+#define LED_COUNT 12
 #define SLAVE_ADDRESS 0x04 // Arduino i2c Slave address
 
 PololuLedStrip<12> ledStrip; // Create an ledStrip object
@@ -34,16 +33,25 @@ struct roverColors {
 uint16_t mode = 10;
 uint16_t freq = 10;
 
+// Voltage reader variables
+double Vout; // voltage at pin A0
+double Vin = 0.0; // voltage being measured, max = 25v
+double factor = 5.0;
+double Vcc = 5.00; // this is the Arduino's Vcc, measure and adjust if necessary
+
 void setup()
 { 
     Wire.begin(SLAVE_ADDRESS);    // join i2c bus with address #4
     Wire.onReceive(receiveData);  // register event
     set(10, 10);
-    Serial.begin(9600);
+    //Serial.begin(9600);
 }
 
 void loop()
 {
+    Vout = analogRead(0); // read the adjusted voltage 0 to 1023
+    Vout =(Vout/1023)*Vcc; // convert to a voltage 0 - 5 volts
+    Vin = Vout * factor; // convert to the voltage being measured
     if (mode == 10 | freq == 10)
     {
         int chaseSize = 6;
@@ -67,26 +75,34 @@ void loop()
 
 void receiveData(int byteCount) 
 {
+    //LIGHTS
+    uint16_t recv_mode = mode;
+    uint16_t recv_freq = freq;
     if (Wire.available() == 2) 
     {
-        mode = Wire.read();
-        freq = Wire.read();
-        Serial.print(mode);
-        Serial.print(freq);
+        recv_mode = Wire.read();
+        recv_freq = Wire.read();
+        //Serial.print(mode);
+        //Serial.print(freq);
        
-        if(mode >= 0 && mode <= 10 && freq >= 0 && freq <= 10)
+        if((mode >= 0 && mode <= 10 && freq >= 0 && freq <= 10) && (recv_mode != mode || recv_freq != freq))
         {
             set(mode, freq);
         }
+
+        // VOLTAGE READER
+        Vout = analogRead(0); // read the adjusted voltage 0 to 1023
+        Vout =(Vout/1023)*Vcc; // convert to a voltage 0 - 5 volts
+        Vin = Vout * factor; // convert to the voltage being measured
+        // TODO: convert to byte array and pad with zeros EX: Wire.write(sample, BUFFER_SIZE);
     } 
 }
-
 
 void set(uint16_t mode, uint16_t freq)
 {
     if (mode == 7 && freq == 7)
     {
-        tennisBallDance();
+        found();
     }
     
     else if (mode == 10 && freq == 10)
@@ -96,7 +112,7 @@ void set(uint16_t mode, uint16_t freq)
     
     else
     {
-        uint16_t segLen = LED_COUNT/4; // each segment length
+        uint16_t segLen = LED_COUNT;
         for(uint16_t i = 0; i < segLen; i++)
         {
             colors[i].red = myColors[freq].rgbVals[0], colors[i].green = myColors[freq].rgbVals[1], colors[i]. blue = myColors[freq].rgbVals[2];
@@ -109,7 +125,7 @@ void set(uint16_t mode, uint16_t freq)
 }
 
 // From PololuLed library
-void tennisBallDance()
+void found()
 {
     for(int i = 0; i < 150; i++)
     {    
@@ -127,7 +143,7 @@ void tennisBallDance()
 
 void csuf()
 {
-    int chaseSize = 6;
+    int chaseSize = 2;
     int current = 0;
     for(int oddLed = 0; ; oddLed++)
     {
