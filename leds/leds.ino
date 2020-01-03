@@ -1,7 +1,8 @@
+  
 /*
  *File:        leds.ino
  *Author:      Chary Vielma
- *Email:       chary.vielma@gmail.com
+ *Email:       chary.vielma@csu.fullerton.edu
  *Description: Program receives 2 byte values via the i2c bus to indicate mode and frequency.
  *             LED strip on Rover will be lit according to these values (e.g. (1, 3) for
  *             green and purple). Must use with LED library found at:
@@ -11,11 +12,11 @@
 #include <Wire.h>
 #include <PololuLedStrip.h>
 
-#define LED_COUNT 6
+#define LED_COUNT 60
 #define SLAVE_ADDRESS 0x04 // Arduino i2c Slave address
 
 PololuLedStrip<12> ledStrip; // Create an ledStrip object
-rgb_color colors[LED_COUNT]; 
+rgb_color colors[LED_COUNT]; // Must be multiple of 4
 
 struct roverColors {
   uint8_t rgbVals[3];
@@ -38,9 +39,31 @@ void setup()
     Wire.begin(SLAVE_ADDRESS);    // join i2c bus with address #4
     Wire.onReceive(receiveData);  // register event
     set(10, 10);
+    Serial.begin(9600);
 }
 
-void loop() { }
+void loop()
+{
+    if (mode == 10 | freq == 10)
+    {
+        int chaseSize = 6;
+        int current = 0;
+        for(int oddLed = 0; oddLed < 50000; oddLed++)
+        {
+            if (mode != 10 || freq != 10)
+            {
+                break;
+            }
+            for(int i = 0; i < LED_COUNT; i++)
+            {
+                current = oddLed % chaseSize;
+                colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
+                ledStrip.write(colors, LED_COUNT);
+            }
+        current++;
+        }
+    }
+}
 
 void receiveData(int byteCount) 
 {
@@ -48,6 +71,8 @@ void receiveData(int byteCount)
     {
         mode = Wire.read();
         freq = Wire.read();
+        Serial.print(mode);
+        Serial.print(freq);
        
         if(mode >= 0 && mode <= 10 && freq >= 0 && freq <= 10)
         {
@@ -61,7 +86,7 @@ void set(uint16_t mode, uint16_t freq)
 {
     if (mode == 7 && freq == 7)
     {
-        found();
+        tennisBallDance();
     }
     
     else if (mode == 10 && freq == 10)
@@ -71,7 +96,7 @@ void set(uint16_t mode, uint16_t freq)
     
     else
     {
-        uint16_t segLen = LED_COUNT; // each segment length
+        uint16_t segLen = LED_COUNT/4; // each segment length
         for(uint16_t i = 0; i < segLen; i++)
         {
             colors[i].red = myColors[freq].rgbVals[0], colors[i].green = myColors[freq].rgbVals[1], colors[i]. blue = myColors[freq].rgbVals[2];
@@ -79,16 +104,14 @@ void set(uint16_t mode, uint16_t freq)
             colors[i + 2*segLen].red = myColors[mode].rgbVals[0], colors[i + 2*segLen].green = myColors[mode].rgbVals[1], colors[i + 2*segLen].blue = myColors[mode].rgbVals[2];
             colors[i + 3*segLen].red = myColors[freq].rgbVals[0], colors[i + 3*segLen].green = myColors[freq].rgbVals[1], colors[i + 3*segLen].blue = myColors[freq].rgbVals[2];
         }
-        
         ledStrip.write(colors, LED_COUNT);
     }
 }
 
 // From PololuLed library
-//TODO: figure out how large the number needs to be in order to have this function run for 15 seconds (update i < 50000)
-void found()
+void tennisBallDance()
 {
-    for(int i = 0; i < 50000; i++)
+    for(int i = 0; i < 150; i++)
     {    
         byte time = millis() >> 2;
         for (uint16_t i = 0; i < LED_COUNT; i++)
@@ -104,21 +127,20 @@ void found()
 
 void csuf()
 {
-    int chaseSize = 3;
+    int chaseSize = 6;
     int current = 0;
-      for(int oddLed = 0; ; oddLed++)
-      {
-          if(mode != 10 | freq != 10) 
-          {
-              break;
-          }
-          for(int i = 0; i < LED_COUNT; i++)
-          {
-              current = oddLed % chaseSize;
-              colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
-              ledStrip.write(colors, LED_COUNT);
-          }
-      current++;
-      delay(250);
+    for(int oddLed = 0; ; oddLed++)
+    {
+        if (mode != 10 || freq != 10)
+        {
+            break;
+        }
+        for(int i = 0; i < LED_COUNT; i++)
+        {
+            current = oddLed % chaseSize;
+            colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
+            ledStrip.write(colors, LED_COUNT);
+        }
+    current++;
     }
 }
