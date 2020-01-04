@@ -69,6 +69,8 @@ void receiveData(int byteCount)
        
         if((mode >= 0 && mode <= 10 && freq >= 0 && freq <= 10) && (recv_mode != mode || recv_freq != freq))
         {
+            mode = recv_mode;
+            freq = recv_freq;
             set(mode, freq);
         }
 
