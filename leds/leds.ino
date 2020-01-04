@@ -43,34 +43,16 @@ void setup()
 { 
     Wire.begin(SLAVE_ADDRESS);    // join i2c bus with address #4
     Wire.onReceive(receiveData);  // register event
-    set(10, 10);
+    csuf();
     //Serial.begin(9600);
 }
 
 void loop()
 {
-    Vout = analogRead(0); // read the adjusted voltage 0 to 1023
+/*    Vout = analogRead(0); // read the adjusted voltage 0 to 1023
     Vout =(Vout/1023)*Vcc; // convert to a voltage 0 - 5 volts
     Vin = Vout * factor; // convert to the voltage being measured
-    if (mode == 10 | freq == 10)
-    {
-        int chaseSize = 6;
-        int current = 0;
-        for(int oddLed = 0; oddLed < 50000; oddLed++)
-        {
-            if (mode != 10 || freq != 10)
-            {
-                break;
-            }
-            for(int i = 0; i < LED_COUNT; i++)
-            {
-                current = oddLed % chaseSize;
-                colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
-                ledStrip.write(colors, LED_COUNT);
-            }
-        current++;
-        }
-    }
+*/
 }
 
 void receiveData(int byteCount) 
@@ -91,9 +73,9 @@ void receiveData(int byteCount)
         }
 
         // VOLTAGE READER
-        Vout = analogRead(0); // read the adjusted voltage 0 to 1023
-        Vout =(Vout/1023)*Vcc; // convert to a voltage 0 - 5 volts
-        Vin = Vout * factor; // convert to the voltage being measured
+        //Vout = analogRead(0); // read the adjusted voltage 0 to 1023
+        //Vout =(Vout/1023)*Vcc; // convert to a voltage 0 - 5 volts
+        //Vin = Vout * factor; // convert to the voltage being measured
         // TODO: convert to byte array and pad with zeros EX: Wire.write(sample, BUFFER_SIZE);
     } 
 }
@@ -156,6 +138,7 @@ void csuf()
             current = oddLed % chaseSize;
             colors[i] = (i % chaseSize == current) ? rgb_color(225,80, 0) : rgb_color(0, 25, 90);
             ledStrip.write(colors, LED_COUNT);
+            delay(50);
         }
     current++;
     }
