@@ -7,7 +7,7 @@
     "other1": ["camera1", "camera2", "camera3", "camera4"]
   },
   "devices": {
-    "camera1": {
+    "video0": {
       "device": "0",
       "quality": [
         {
@@ -30,7 +30,7 @@
         }
       ]
     },
-    "camera2": {
+    "video2": {
       "device": "2",
       "quality": [
         {
@@ -53,7 +53,7 @@
         }
       ]
     },
-    "camera3": {
+    "video4": {
       "device": "4",
       "quality": [
         {
@@ -76,7 +76,7 @@
         }
       ]
     },
-    "camera4": {
+    "video6": {
       "device": "0",
       "quality": [
         {
