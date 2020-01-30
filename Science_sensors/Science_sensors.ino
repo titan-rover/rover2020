@@ -1,8 +1,8 @@
 /*
  Combined code for all sensors
- By: Jithin J Eapen 
- Date: January 15th, 2018
- License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
+ By: Junji Bressan 
+ Date: January 29th, 2020
+ Code refactored from: https://github.com/CSUFTitanRover/TitanRover2018/blob/master/rover/core/science/JitSensorsInterface/JitSensorsInterface.ino
  Sensors-
  MPL3115A2 library to display the current altitude and temperature
  GUVA-S12SD reading values from Analog Input pin A0 for UV Light Sensing
@@ -45,15 +45,7 @@ void setup() {
   //Serial.begin(9600);  // Start serial for output
   Serial.begin(57600);  // Start serial for output
   myPressure.begin(); // Get sensor online
-  
-/*
-  // Configure the sensor
-  //myPressure.setModeAltimeter(); // Measure altitude above sea level in meters
-  myPressure.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa  
-  myPressure.setOversampleRate(7); // Set Oversample to the recommended 128
-  myPressure.enableEventFlags(); // Enable all three pressure and temp event flags
-  */
-  
+    
   //Serial.write("Adafruit MLX90614 test");
   mlx.begin();
   
@@ -71,9 +63,6 @@ void loop() {
   //Serial.print("Temperature\n");
   loopTempSensor();
   
-  /* Code for 5TE Sensor */
-  //loopSoilSensor_5TE();
-  
   /* Code for DHT11 Humidity Sensor */
   loopHumidity_DHT11();
   
@@ -86,7 +75,7 @@ void loop() {
   Serial.write("\n");
 
   nh.spinOnce();
-  delay(1000);
+  delay(1100);
 }
 
 //Loop code for Melexis MLX90614
