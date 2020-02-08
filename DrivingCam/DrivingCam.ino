@@ -1,31 +1,36 @@
 //#include <Servo.h>
 #include <Wire.h>
 #include <Stepper.h>
+//#include "Timer.h"
 #define SLAVE_ADDRESS 0x05
 
 // change this to the number of steps on your motor
-#define STEPS 20
+#define STEPS 141
+#define sp 80
 
-/*Servo pan_servo;
-Servo tilt_servo;
-int16_t home_val = 0;
+//Servo pan_servo;
+//Servo tilt_servo;
+//int16_t home_val = 0;
 int16_t pan = 0;
 int16_t tilt = 0;
-int tilt_start_angle = 30;
-int pan_start_angle = 90;
-int tilt_curr_angle = tilt_start_angle;
-int pan_curr_angle = pan_start_angle;
-int tilt_max_forward_angle = 60;
-int tilt_max_back_angle = 0;
-int pan_max_right_angle = 30;
-int pan_max_left_angle = 150;
-int incomingByte = 0; // for incoming serial data*/
+//int tilt_start_angle = 30;
+//int pan_start_angle = 90;
+//int tilt_curr_angle = tilt_start_angle;
+//int pan_curr_angle = pan_start_angle;
+//int tilt_max_forward_angle = 60;
+//int tilt_max_back_angle = 0;
+//int pan_max_right_angle = 30;
+//int pan_max_left_angle = 150;
+//int incomingByte = 0; // for incoming serial data
 
 // create an instance of the stepper class, specifying
 // the number of steps of the motor and the pins it's
 // attached to
-Stepper stepper1(STEPS, 4, 5, 6, 7);
-Stepper stepper2(STEPS, 8, 9, 10, 11);
+Stepper stepper1(STEPS, 2, 3, 4, 5);
+Stepper stepper2(STEPS, 7, 8, 9, 10);
+
+String panTemp;
+String tiltTemp;
 
 void setup()
 {
@@ -34,11 +39,12 @@ void setup()
 //   tilt_servo.write(tilt_start_angle);
 //   pan_servo.write(pan_start_angle);
 //   //inputData();
-//   Serial.begin(9600);
+   Serial.begin(9600);
   // set the speed of the motor to 30 RPMs
   stepper1.setSpeed(60);
+  stepper2.setSpeed(sp);
   Wire.begin(SLAVE_ADDRESS);
-  Wire.onReceive(receiveData);
+//  Wire.onReceive(receiveData);
 }
 void loop()
 {
@@ -51,22 +57,56 @@ void loop()
 //     Serial.print("I received: ");
 //     Serial.println(incomingByte, DEC);
 //   }
-  stepper1.step(STEPS);
-  stepper1.step(-STEPS);
-   // stepper2.step(STEPS);
+  //stepper1.step(80);
+  //stepper1.step(-STEPS);
+  //stepper2.step(STEPS);
   //stepper2.step(-STEPS);
+  if(Serial.available() == 2)
+  {
+    panTemp = Serial.read();
+    tiltTemp = Serial.read();
+    Serial.print(panTemp);
+    Serial.print(tiltTemp);
+    pan = panTemp.toInt();
+    tilt = tiltTemp.toInt();
+    Serial.print(pan);
+    Serial.print(tilt);
+    stepper1.step(STEPS * pan);
+    stepper2.step(STEPS * tilt); 
+    delay(100);
+    Serial.flush();
+  }
 }
 /*void inputData(){
 }*/
 void receiveData(int byteCount) 
 {
-     if (Wire.available() == 2)
+  //Serial.print("Test\n");
+  //Serial.print(Wire.available());
+  //Serial.print("\n");
+    if (Wire.available() == 2)
     {
-      pan = Wire.read();
-      tilt = Wire.read();
+   //   Serial.print("inside if\n");
+      pan = Serial.read();
+      tilt = Serial.read();
+     /* Serial.print("pan: ");
+      Serial.print(pan);
+      Serial.print("\ntilt: ");
+      Serial.print(tilt);
+      Serial.print("\n");*/
+      if(pan == 255)
+      {
+        pan = -1;
+      }
+      else if(tilt == 255)
+      {
+        tilt = -1;
+      }
+      stepper1.step(STEPS * pan);
+    //  Serial.print("pan turned\n");
+      stepper2.step(STEPS * tilt);
+    //  Serial.print("tilt turned\n");
     }
-    stepper1.step(STEPS * pan);
-    stepper2.step(STEPS * tilt);
 //     int16_t recv_home = home_val;
 //     int16_t recv_pan = pan;
 //     int16_t recv_tilt = tilt;
@@ -79,7 +119,8 @@ void receiveData(int byteCount)
 //         recv_tilt = Wire.read();
 //         if(recv_pan == 255)
 //         {
-//           recv_pan = (256 - 255) * -1;
+//           //recv_pan = (256 - 255) * -1;
+
 //         }
 //         else if(recv_tilt == 255)
 //         {
