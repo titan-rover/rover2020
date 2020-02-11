@@ -13,7 +13,7 @@
  
  */
 #include <Wire.h>
-#include "Adafruit_SI1145.h"
+//#include "Adafruit_SI1145.h"
 #include <Adafruit_MLX90614.h>
 #include <dht.h>
 #include <JitK30.h> //For CO2 K-30 sensor if wired for i2c
@@ -29,7 +29,7 @@ dht DHT;
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 //UV sensor
-Adafruit_SI1145 uv = Adafruit_SI1145();
+//Adafruit_SI1145 uv = Adafruit_SI1145();
 
 ros::NodeHandle nh;
 science_sensors::sci_msgs readings;
@@ -83,12 +83,12 @@ void loopTempSensor(){
 
 //Loop code for UV Light Sensor
 void loopUVLight(){
-  readings.uv_visible = uv.readVisible();
+  /*readings.uv_visible = uv.readVisible();
   readings.uv_infared = uv.readIR();
-  readings.uv_index = (uv.readUV() / 100.0);
-  /*readings.uv_sensor = analogRead(A0);
-  readings.voltage = readings.uv_sensor * 3.3 / 1023;
-  readings.uv_index = readings.voltage / 0.1;*/
+  readings.uv_index = (uv.readUV() / 100.0);*/
+  readings.uv_intensity = analogRead(A0);
+  //readings.voltage = readings.uv_sensor * 3.3 / 1023;
+  //readings.uv_index = readings.voltage / 0.1;
 }
 
 //Loop code for Humidity sensor
