@@ -11,10 +11,10 @@
 #include <Wire.h>
 #include <PololuLedStrip.h>
 
-#define LED_COUNT 12
+#define LED_COUNT 6
 #define SLAVE_ADDRESS 0x04 // Arduino i2c Slave address
 
-PololuLedStrip<12> ledStrip; // Create an ledStrip object
+PololuLedStrip<6> ledStrip; // Create an ledStrip object
 rgb_color colors[LED_COUNT]; // Must be multiple of 4
 
 struct roverColors {
